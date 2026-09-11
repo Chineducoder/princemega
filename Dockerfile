@@ -6,9 +6,10 @@ ENV APP_DEBUG=false
 ENV LOG_CHANNEL=stderr
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Configure Apache DocumentRoot to Laravel's public directory and enable mod_rewrite
+# Configure Apache DocumentRoot to Laravel's public directory and enable mod_rewrite & AllowOverride
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
+    && sed -ri -e 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf \
     && a2enmod rewrite
 
 # Install Composer binary from official image
