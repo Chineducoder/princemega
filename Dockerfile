@@ -4,9 +4,19 @@ ENV SERVER_NAME=":80"
 ENV APP_ENV=production
 ENV APP_DEBUG=false
 ENV LOG_CHANNEL=stderr
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Install Composer binary from official image
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Install required system packages (git, unzip, nodejs, npm)
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    libzip-dev \
+    nodejs \
+    npm \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install required PHP extensions
 RUN install-php-extensions \
@@ -19,22 +29,25 @@ RUN install-php-extensions \
 
 WORKDIR /app
 
-# Install Node.js & NPM for Vite asset building
-RUN apt-get update && apt-get install -y nodejs npm && rm -rf /var/lib/apt/lists/*
-
 # Copy application files
 COPY . .
 
+# Setup necessary directories with proper permissions
+RUN mkdir -p database \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/framework/cache/data \
+    storage/logs \
+    bootstrap/cache \
+    && touch database/database.sqlite \
+    && chmod -R 777 storage bootstrap/cache database
+
 # Install Composer dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts \
+    && composer dump-autoload --optimize
 
 # Build assets with Vite
 RUN npm install && npm run build && rm -rf node_modules
-
-# Ensure SQLite file and storage directory permissions
-RUN mkdir -p database storage/framework/sessions storage/framework/views storage/framework/cache storage/logs bootstrap/cache \
-    && touch database/database.sqlite \
-    && chmod -R 777 storage bootstrap/cache database
 
 EXPOSE 80
 
