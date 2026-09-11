@@ -5,6 +5,9 @@ ENV APP_ENV=production
 ENV APP_DEBUG=false
 ENV LOG_CHANNEL=stderr
 
+# Install Composer binary from official image
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
 # Install required PHP extensions
 RUN install-php-extensions \
     pdo_sqlite \
@@ -16,7 +19,7 @@ RUN install-php-extensions \
 
 WORKDIR /app
 
-# Install Node.js for Vite frontend asset building
+# Install Node.js & NPM for Vite asset building
 RUN apt-get update && apt-get install -y nodejs npm && rm -rf /var/lib/apt/lists/*
 
 # Copy application files
