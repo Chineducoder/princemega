@@ -1,0 +1,265 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'Inter', 'Helvetica Neue', Helvetica, Arial, ui-sans-serif, system-ui, sans-serif;
+    --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+
+    /* Monochrome foundation — no colored UI, photography provides the color */
+    --color-ink: #000000;
+    --color-paper: #ffffff;
+    --color-mid: #5a5a5a;
+    --color-mist: #f6f6f6;
+    --color-rule: #e5e5e5;
+
+    --tracking-brand: 0.16em;
+    --tracking-label: 0.14em;
+
+    --text-2xs: 0.625rem;
+    --text-2xs--line-height: 1.4;
+
+    --ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1);
+
+    --animate-toast-in: toast-in 0.25s var(--ease-out-quart) both;
+
+    @keyframes toast-in {
+        from {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+       }
+    }
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+        overflow-x: hidden;
+    }
+
+    body {
+        @apply bg-paper text-ink font-sans antialiased;
+        text-rendering: optimizeLegibility;
+        overflow-x: hidden;
+        width: 100%;
+    }
+
+    ::selection {
+        background: #000;
+        color: #fff;
+    }
+
+    /* Single, disciplined focus treatment across the interface */
+    :focus-visible {
+        outline: 2px solid #000;
+        outline-offset: 2px;
+    }
+
+    img {
+        @apply select-none;
+    }
+
+    input,
+    select,
+    button,
+    textarea {
+        font: inherit;
+        color: inherit;
+        border-radius: 0;
+    }
+
+    /* Minimal, editorial scrollbar for internal scroll areas */
+    .scroll-thin {
+        scrollbar-width: thin;
+        scrollbar-color: #d4d4d4 transparent;
+    }
+    .scroll-thin::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+    }
+    .scroll-thin::-webkit-scrollbar-thumb {
+        background: #d4d4d4;
+    }
+    .scroll-thin::-webkit-scrollbar-track {
+        background: transparent;
+    }
+}
+
+@layer components {
+    /* Uppercase micro-label — the connective tissue of the whole interface */
+    .micro {
+        @apply text-2xs uppercase;
+        letter-spacing: var(--tracking-label);
+    }
+
+    /* Editorial numerals for pricing */
+    .price {
+        font-variant-numeric: lining-nums tabular-nums;
+        letter-spacing: -0.01em;
+    }
+
+    /* Squared CTA — solid black, inverts on hover per art direction */
+    .btn-black {
+        @apply bg-ink text-paper text-2xs uppercase inline-flex items-center justify-center;
+        letter-spacing: var(--tracking-label);
+        padding: 1.05rem 2rem;
+        border: 1px solid #000;
+        transition:
+            background-color 0.2s ease-out,
+            color 0.2s ease-out,
+            border-color 0.2s ease-out;
+    }
+    .btn-black:hover {
+        @apply bg-paper text-ink;
+    }
+    .btn-black:active {
+        transform: translateY(1px);
+    }
+
+    /* Outlined counterpart */
+    .btn-outline {
+        @apply bg-paper text-ink text-2xs uppercase inline-flex items-center justify-center;
+        letter-spacing: var(--tracking-label);
+        padding: 1.05rem 2rem;
+        border: 1px solid #000;
+        transition:
+            background-color 0.2s ease-out,
+            color 0.2s ease-out,
+            border-color 0.2s ease-out;
+    }
+    .btn-outline:hover {
+        @apply bg-ink text-paper;
+    }
+    .btn-outline:active {
+        transform: translateY(1px);
+    }
+
+    /* Underline-on-hover nav treatment */
+    .nav-link {
+        @apply text-2xs uppercase relative;
+        letter-spacing: var(--tracking-label);
+        padding: 1.6rem 0;
+        display: inline-block;
+    }
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 100%;
+        bottom: 1.15rem;
+        height: 1px;
+        background: #000;
+        transition: right 0.2s var(--ease-out-quart);
+    }
+    .nav-link:hover::after,
+    .nav-link[aria-current='page']::after {
+        right: 0;
+    }
+
+    /* Quiet secondary link */
+    .link-quiet {
+        @apply text-2xs uppercase;
+        letter-spacing: var(--tracking-label);
+        border-bottom: 1px solid transparent;
+        padding-bottom: 1px;
+        transition: border-color 0.2s ease-out;
+    }
+    .link-quiet:hover {
+        border-bottom-color: #000;
+    }
+
+    /* Editorial display type */
+    .display-xl {
+        @apply uppercase text-ink;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 0.94;
+    }
+
+    /* Restrained skeleton shimmer */
+    .skeleton {
+        @apply bg-mist relative overflow-hidden;
+    }
+    .skeleton::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        transform: translateX(-100%);
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+        animation: skeleton-sweep 1.4s infinite;
+    }
+    @keyframes skeleton-sweep {
+        100% {
+            transform: translateX(100%);
+        }
+    }
+}
+
+@layer utilities {
+    /* Flat monochrome swatch. Radio semantics, tiny geometry. */
+    .shade {
+        position: relative;
+        display: inline-block;
+        width: 1.25rem;
+        height: 1.25rem;
+        border: 1px solid #d4d4d4;
+        cursor: pointer;
+        transition: border-color 0.15s ease-out;
+    }
+    .shade:hover {
+        border-color: #000;
+    }
+    .shade input {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        cursor: pointer;
+    }
+    .shade input:focus-visible {
+        outline: 2px solid #000;
+        outline-offset: 1px;
+    }
+    .shade-dot {
+        display: block;
+        width: 100%;
+        height: 100%;
+        background: var(--shade-color, #e5e5e5);
+        transform: scale(0.9);
+        transition: transform 0.15s var(--ease-out-quart);
+    }
+    .shade input:checked ~ .shade-dot {
+        transform: scale(0.55);
+    }
+    .shade:has(input:checked) {
+        border-color: #000;
+    }
+    /* Numerical shade variant — typographic, not a color chip */
+    .shade-num {
+        @apply text-2xs relative inline-flex h-5 min-w-5 items-center justify-center border border-rule px-1;
+        font-variant-numeric: tabular-nums;
+        cursor: pointer;
+        transition:
+            border-color 0.15s ease-out,
+            background-color 0.15s ease-out,
+            color 0.15s ease-out;
+    }
+    .shade-num:hover {
+        border-color: #000;
+    }
+    .shade-num:has(input:checked) {
+        @apply border-ink bg-ink text-paper;
+    }
+    .shade-num input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+}
