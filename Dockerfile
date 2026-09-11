@@ -1,4 +1,4 @@
-FROM dunglas/frankenphp:1-php8.3
+FROM dunglas/frankenphp:1-php8.4
 
 ENV SERVER_NAME=":80"
 ENV APP_ENV=production
